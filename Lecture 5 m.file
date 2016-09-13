@@ -1,0 +1,58 @@
+%Lecture 5
+
+data = xlsread('hourly_bid_data.xls');
+
+vector = mat2vec(data);
+
+gobbled_data = data_goblin(vector);
+
+processed_data= pre_processor(gobbled_data)
+
+qqplot(processed_data); 
+histogram(processed_data);
+
+%find hour and day of the missing value
+isnan(processed_data)
+find(isnan(processed_data)>0)
+%the hour 1611 occured on March 8th at 4:00am
+
+%%A log-transformation does not make sense here because 
+%the data is not log normal and does not have a 
+%notable "tail" or skewing. standard deviation and NaN. A min/max
+%filter does not work here because the weird value is NaN and therefore
+%is not picked up by the command. For the purpose of question 4 
+%we are assuming the weird value is zero.
+
+
+S= std(processed_data,'omitnan');
+M= mean(processed_data,'omitnan');
+
+Ans_Trans3= M/S
+
+%We do not believe a statistical outlier test is appropriate here.
+
+march_data=processed_data(1439:2182);
+
+%Ans_Trans3 is 5.6879 standard devaitions 
+
+S_march= std(march_data,'omitnan');
+M_march= mean(march_data,'omitnan');
+
+Ans_march= M_march/S_march
+
+%Ans_march is 8.1009 standard deviations 
+
+%data mining
+%we used the original data set "data" and turned it into a matrix of 
+%365 columns (every day of the year) for this. 
+day_data=data';
+
+dailymax = max(day_data);
+
+tempdata = xlsread('tempdata.xls');
+
+scatter(tempdata, dailymax) 
+
+%We notice that the daily peak energy demand increases as the temperature 
+%becomes cold in the winter or hot in the summer. Peak energy demand is 
+%lowest during moderate temperatures. 
